@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "42693068038",
+    "project_id": "healthdclic",
+    "storage_bucket": "healthdclic.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:42693068038:android:9ccc6b08a76178671c4a87",
+        "android_client_info": {
+          "package_name": "com.example.myhealth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8Owx55a3dM5OZi3Z-I2zQQpVdV7MqeN8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:42693068038:android:b2d5ab3aa22e74631c4a87",
+        "android_client_info": {
+          "package_name": "com.example.projet_patient"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8Owx55a3dM5OZi3Z-I2zQQpVdV7MqeN8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

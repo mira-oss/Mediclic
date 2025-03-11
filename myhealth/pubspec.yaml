@@ -38,6 +38,7 @@ dependencies:
   firebase_auth: ^5.5.1
   fluttertoast: ^8.2.12
   cloud_firestore: ^5.6.5
+  sliding_clipped_nav_bar: ^3.1.1
 
 dev_dependencies:
   flutter_test:

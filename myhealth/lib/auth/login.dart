@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myhealth/acceuil.dart';
+import 'package:myhealth/acceuilMedecin.dart';
 import 'package:myhealth/auth/signUp.dart';
-//import 'package:manag_app/admin/home.dart';
+import 'package:myhealth/main.dart';
+import 'package:myhealth/services/firestor_services.dart';
 
+//import 'package:manag_app/admin/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,23 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
 
   @override
-   void initState() {
-    super.initState();
-    checkUserLogin(); // Vérifier l'état de l'utilisateur au démarrage
-  }
-
-  void checkUserLogin() {
-    _firebaseAuth.authStateChanges().listen((User? user) {
-      if (user != null) {
-        // L'utilisateur est déjà connecté
-       /* Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Acceuil()),
-        );*/
-      }
-    });
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
@@ -77,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
         controller: email,
         validator: (value) {
           if (value!.isEmpty) return "L'email est obligatoire";
-          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) return "Email invalide";
+          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value))
+            return "Email invalide";
           return null;
         },
         decoration: const InputDecoration(
@@ -99,7 +87,8 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       child: TextFormField(
         controller: password,
-        validator: (value) => value!.isEmpty ? "Le password est obligatoire" : null,
+        validator: (value) =>
+            value!.isEmpty ? "Le password est obligatoire" : null,
         obscureText: !isVisible,
         decoration: InputDecoration(
           icon: Icon(Icons.lock),
@@ -144,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Future.delayed(Duration(seconds: 1), () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => Acceuil()),
+                  MaterialPageRoute(builder: (context) => MyHomePage()),
                 );
               });
             } on FirebaseAuthException catch (e) {

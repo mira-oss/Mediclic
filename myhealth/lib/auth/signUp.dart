@@ -181,12 +181,12 @@ class _SignUpState extends State<SignUp> {
         );
 
         // Determine user role
-        // String role = await _firestoreServices.determineUserRole();
+         String role = await _firestoreServices.determineUserRole();
 
         // Add user to Firestore with role
         await _firestoreServices.addUser(userCredential.user!.uid,
-            username.text.trim(), email.text.trim(), number.text.trim()
-            //role,
+            username.text.trim(), email.text.trim(), number.text.trim(),
+            role,
             );
 
         // Redirect based on role

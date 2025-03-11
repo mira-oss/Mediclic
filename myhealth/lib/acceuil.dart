@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myhealth/ajout_medecin.dart';
 
@@ -11,11 +12,31 @@ class Acceuil extends StatefulWidget {
 class _AcceuilState extends State<Acceuil> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.all(10),
+    return SafeArea(
+        child: Padding(
+      padding: EdgeInsets.all(15),
+      child: SingleChildScrollView(
       child: Column(children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                    backgroundImage: AssetImage('assets/images/avatar.png')),
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: Text("Hello ,Doc"),
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(
+          height:5,
+        ),
         Container(
-          padding: EdgeInsets.only(top: 50),
+          padding: EdgeInsets.only(top:5),
           child: TextField(
             decoration: InputDecoration(
               hintText: 'Search',
@@ -46,9 +67,10 @@ class _AcceuilState extends State<Acceuil> {
           children: [
             _buildDashboardCard('Ajout medecin', 'assets/images/personne.jpeg',
                 () {
-               Navigator.push(context, MaterialPageRoute(builder: (context) => AjoutMedecin()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AjoutMedecin()));
             }),
-           /* _buildDashboardCard(
+            /* _buildDashboardCard(
                 'Commandes en cours', 'assets/images/panier1.png', () {}),
             _buildDashboardCard(
                 'Demande marchand', 'assets/images/enveloppe2.png', () {}),
@@ -57,7 +79,9 @@ class _AcceuilState extends State<Acceuil> {
           ],
         ),
       ]),
-    );
+    ),
+    ));
+    
   }
 
   Widget _buildDashboardCard(
@@ -74,7 +98,7 @@ class _AcceuilState extends State<Acceuil> {
             children: [
               CircleAvatar(
                 backgroundImage: AssetImage(imagePath),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color.fromARGB(255, 37, 163, 221),
               ),
               SizedBox(height: 10),
               Text(title, textAlign: TextAlign.center),

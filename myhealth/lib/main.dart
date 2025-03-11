@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myhealth/acceuil.dart';
+import 'package:myhealth/ajout_specialit%C3%A9.dart';
 import 'package:myhealth/auth/login.dart';
 import 'package:myhealth/firebase_options.dart';
 import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
@@ -36,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
   final pages = [
     Acceuil(),
-    Acceuil(),
+    AjoutSpecialite(),
   ];
   bool _colorful = false;
   @override

@@ -13,5 +13,6 @@ class _AcceuilmedecinState extends State<Acceuilmedecin> {
     return Scaffold(
       body: Center(child: const Text("Accueil Medecin")),
     );
+    
   }
 }

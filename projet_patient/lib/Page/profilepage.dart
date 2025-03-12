@@ -143,34 +143,11 @@ ElevatedButton(
   crossAxisAlignment: CrossAxisAlignment.start, // Aligne les éléments à gauche
   children: [
     Text(
-      "Nom:",
+      "Nom et prénom:",
       style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: const Color.fromARGB(255, 0, 0, 0)),
     ),
-    SizedBox(height: 18),
-    Text(
-      "Prénom:",
-      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: const Color.fromARGB(255, 0, 0, 0)),
-    ),
-    SizedBox(height: 18),
-    Text(
-      "Genre:",
-      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: const Color.fromARGB(255, 0, 0, 0)),
-    ),
-    SizedBox(height: 18),
-    Text(
-      "Âge:",
-      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: const Color.fromARGB(255, 0, 0, 0)),
-    ),
-    SizedBox(height: 18),
-    Text(
-      "Taille:",
-      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: const Color.fromARGB(255, 0, 0, 0)),
-    ),
-    SizedBox(height: 18),
-    Text(
-      "Poids:",
-      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: const Color.fromARGB(255, 0, 0, 0)),
-    ),
+    
+    
   ],
 ),
 
@@ -178,18 +155,7 @@ ElevatedButton(
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Smith", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.blue),),
-                              SizedBox(height: 20,),
-                              Text("Yasmine", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.blue),),
-                              SizedBox(height: 20,),
-                              Text("Féminin", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.blue),),
-                              SizedBox(height: 20,),
-                              Text("25ans", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.blue),),
-                              SizedBox(height: 20,),
-                              Text("1m70", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.blue),),
-                              SizedBox(height: 20,),
-                              Text("80Kg", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.blue),),
-                
+                              Text("Smith Yasmine", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.blue),),
                             ],
                           ),
                         ],
@@ -240,7 +206,7 @@ ElevatedButton(
                         _signOut(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Colors.blue,
                         minimumSize: Size(250, 50),
                       ),
                       child: Text('Deconnection', style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),),

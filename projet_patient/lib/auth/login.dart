@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:projet_patient/Page/homepage.dart';
 import 'package:projet_patient/auth/signup.dart';
+import 'package:projet_patient/main.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // L'utilisateur est déjà connecté
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => AcceuilPage()),
+          MaterialPageRoute(builder: (context) => MyHomePage()),
         );
       }
     });
@@ -46,12 +47,32 @@ class _LoginScreenState extends State<LoginScreen> {
               key: formKey,
               child: Column(
                 children: [
-                  Image.asset('assets/ybr.jpeg', width: 200),
-                  SizedBox(height: 15),
+                  Center(
+              child: Container(
+                width: 250, // Largeur de l'image
+                height: 200, // Hauteur de l'image
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/image/cropped-sante_rouge.png'), // Remplace ceci par ton image
+                  ),
+                ),
+              ),
+            ),
+                  const Center(
+              child: Text(
+                'Connectez-vous',
+                style: TextStyle(
+                  fontSize: 35,
+                  fontWeight: FontWeight.w800, color: Color.fromARGB(255, 0, 36, 134),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
                   _buildEmailField(),
                   _buildPasswordField(),
                   SizedBox(height: 15),
                   _buildLoginButton(),
+                  SizedBox(height: 20,),
                   _buildSignUpPrompt(),
                 ],
               ),
@@ -69,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Colors.blueAccent.withOpacity(0.5),
+        color: const Color.fromARGB(255, 244, 242, 255),
       ),
       child: TextFormField(
         controller: email,
@@ -79,9 +100,18 @@ class _LoginScreenState extends State<LoginScreen> {
           return null;
         },
         decoration: const InputDecoration(
-          icon: Icon(Icons.person),
-          border: InputBorder.none,
-          hintText: 'Email',
+          prefixIcon: Icon(
+                        Icons.person,
+                        color: Colors.grey, // Couleur de l'icône (modifiable)
+                      ),
+          labelText: 'Email ou Numéro de téléphone',
+                      labelStyle: TextStyle(
+                        color: Colors.grey, // Couleur du label (modifiable)
+                        fontWeight: FontWeight.bold, // Poids du label
+                      ),
+          hintText: 'Entrez votre email',
+          hintStyle: TextStyle( color: Colors.grey, ), // Couleur du hintText (modifiable)
+
         ),
       ),
     );
@@ -93,16 +123,23 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Colors.blueAccent.withOpacity(0.5),
+        color: const Color.fromARGB(255, 244, 242, 255),
       ),
       child: TextFormField(
         controller: password,
         validator: (value) => value!.isEmpty ? "Le password est obligatoire" : null,
         obscureText: !isVisible,
         decoration: InputDecoration(
-          icon: Icon(Icons.lock),
-          border: InputBorder.none,
-          hintText: 'Password',
+          prefixIcon: Icon( Icons.lock, color: Colors.grey, ),// Couleur de l'icône (modifiable)
+          labelText: 'Veuillez entrez votre mot de passe',
+                      labelStyle: TextStyle(
+                        color: Colors.grey, // Couleur du label (modifiable)
+                        fontWeight: FontWeight.bold, // Poids du label
+                      ),
+          
+          hintText: 'Entrez votre mot de passe',
+          hintStyle: TextStyle( color: Colors.grey, ), // Couleur du hintText (modifiable)
+
           suffixIcon: IconButton(
             onPressed: () => setState(() => isVisible = !isVisible),
             icon: Icon(isVisible ? Icons.visibility_off : Icons.visibility),
@@ -117,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
       width: 320,
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: Color.fromARGB(255, 0, 36, 134),
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextButton(
@@ -142,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Future.delayed(Duration(seconds: 1), () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => AcceuilPage()),
+                  MaterialPageRoute(builder: (context) => MyHomePage()),
                 );
               });
             } on FirebaseAuthException catch (e) {
@@ -174,11 +211,11 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         child: Text(
-          'Login',
+          'Se connecter',
           style: TextStyle(
+            fontWeight: FontWeight.bold, // Texte en gras
+            fontSize: 20, // Taille de la police plus grande
             color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 20,
           ),
         ),
       ),
@@ -189,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Vous n'avez pas de compte ?"),
+        Text("Vous n'avez pas de compte ?", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),),
         TextButton(
           onPressed: () {
             Navigator.push(
@@ -199,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             );
           },
-          child: Text('Créer un compte'),
+          child: Text('Créer un compte', style: TextStyle(color: const Color.fromARGB(255, 37, 12, 255), fontWeight: FontWeight.bold, fontSize: 14),),
         ),
       ],
     );

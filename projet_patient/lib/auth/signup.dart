@@ -34,14 +34,24 @@ class _SignUpState extends State<SignUp> {
               key: formKey,
               child: Column(
                 children: [
-                  Image.asset('assets/ybr.jpeg', width: 200),
                   SizedBox(height: 15),
-                  _buildTextField(username, 'Username', Icons.person, "Le username est obligatoire"),
+              const Center(
+              child: Text(
+                'Inscrivez-vous',
+                style: TextStyle(
+                  fontSize: 35,
+                  fontWeight: FontWeight.w700, color: Color.fromARGB(255, 0, 36, 134),
+                ),
+              ),
+            ),
+                   SizedBox(height: 15,),
+                  _buildTextField(username, 'Entrez votre Nom et Prénom', Icons.person, "Votre nom et prénom est obligatoire", ),
                   _buildEmailField(),
-                  _buildTextField(number, 'Number', Icons.numbers, "Le numéro est obligatoire"),
+                  _buildTextField(number, 'Votre numéro de téléphone', Icons.numbers, "Le numéro est obligatoire", ),
                   _buildPasswordField(),
-                  SizedBox(height: 15),
+                  SizedBox(height: 25),
                   _buildSignUpButton(),
+                  SizedBox(height: 15,),
                   _buildLoginPrompt(),
                 ],
               ),
@@ -59,15 +69,19 @@ class _SignUpState extends State<SignUp> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Colors.blueAccent.withOpacity(0.5),
+        color: const Color.fromARGB(255, 244, 242, 255),
       ),
       child: TextFormField(
         controller: controller,
         validator: (value) => value!.isEmpty ? validationMessage : null,
         decoration: InputDecoration(
-          icon: Icon(icon),
-          border: InputBorder.none,
+          prefixIcon: Icon(
+                        icon,
+                        color: Colors.grey, // Couleur de l'icône (modifiable)
+                      ),
+          
           hintText: hintText,
+          hintStyle: TextStyle( color: Colors.grey, fontWeight: FontWeight.bold ), // Couleur du hintText (modifiable)
         ),
       ),
     );
@@ -79,7 +93,7 @@ class _SignUpState extends State<SignUp> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Colors.blueAccent.withOpacity(0.5),
+        color: const Color.fromARGB(255, 244, 242, 255),
       ),
       child: TextFormField(
         controller: email,
@@ -89,9 +103,18 @@ class _SignUpState extends State<SignUp> {
           return null;
         },
         decoration: InputDecoration(
-          icon: Icon(Icons.mail),
-          border: InputBorder.none,
-          hintText: 'Email',
+          prefixIcon: Icon(
+                        Icons.mail_outlined,
+                        color: Colors.grey, // Couleur de l'icône (modifiable)
+                      ),
+          
+          hintText: 'Entrez votre email',
+          hintStyle: TextStyle( color: Colors.grey, ), // Couleur du hintText (modifiable)
+          labelText: 'Entrez votre email',
+                      labelStyle: TextStyle(
+                        color: Colors.grey, // Couleur du label (modifiable)
+                        fontWeight: FontWeight.bold, // Poids du label
+                      ),
         ),
       ),
     );
@@ -103,16 +126,22 @@ class _SignUpState extends State<SignUp> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Colors.blueAccent.withOpacity(0.5),
+        color: const Color.fromARGB(255, 244, 242, 255),
       ),
       child: TextFormField(
         controller: password,
-        validator: (value) => value!.isEmpty ? "Le password est obligatoire" : null,
+        validator: (value) => value!.isEmpty ? "Le mot de passe est obligatoire" : null,
         obscureText: !isVisible,
         decoration: InputDecoration(
-          icon: Icon(Icons.lock),
-          border: InputBorder.none,
-          hintText: 'Password',
+          prefixIcon: Icon( Icons.lock, color: Colors.grey, ),// Couleur de l'icône (modifiable)
+          
+          hintText: 'Entrez votre mot de passe',
+          hintStyle: TextStyle( color: Colors.grey, ), // Couleur du hintText (modifiable)
+          labelText: 'Veuillez entrez votre mot de passe',
+                      labelStyle: TextStyle(
+                        color: Colors.grey, // Couleur du label (modifiable)
+                        fontWeight: FontWeight.bold, // Poids du label
+                      ),
           suffixIcon: IconButton(
             onPressed: () => setState(() => isVisible = !isVisible),
             icon: Icon(isVisible ? Icons.visibility_off : Icons.visibility),
@@ -127,19 +156,19 @@ class _SignUpState extends State<SignUp> {
       width: 340,
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: Color.fromARGB(255, 0, 36, 134),
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextButton(
         onPressed: _signUpUser,
         child: Text(
-          'Sign Up',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 20,
-          ),
-        ),
+    'S\'inscrire',
+    style: TextStyle(
+      fontWeight: FontWeight.bold, // Texte en gras
+      fontSize: 20, // Taille de la police plus grande
+      color: Colors.white,
+    ),
+  ),
       ),
     );
   }
@@ -148,7 +177,7 @@ class _SignUpState extends State<SignUp> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Vous avez un compte?"),
+        Text("Vous avez un compte?", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),
         TextButton(
           onPressed: () {
             Navigator.push(
@@ -156,7 +185,7 @@ class _SignUpState extends State<SignUp> {
               MaterialPageRoute(builder: (context) => LoginScreen()),
             );
           },
-          child: Text('Login'),
+          child: Text('Connectez-vous', style: TextStyle(color: const Color.fromARGB(255, 37, 12, 255), fontWeight: FontWeight.bold, fontSize: 16),),
         ),
       ],
     );
@@ -171,26 +200,31 @@ class _SignUpState extends State<SignUp> {
         password: password.text.trim(),
       );
 
-      String? role = await _firestoreServices
-          .determineUserRole(userCredential.user!.uid);
+      // Ajout de l'utilisateur avec le rôle "patient" automatique
+      await _firestoreServices.addUser(
+        userCredential.user!.uid,
+        username.text.trim(),
+        email.text.trim(),
+        number.text.trim(),
+      );
 
-      if(role != null){
-        await _firestoreServices.addUser(
-          userCredential.user!.uid,
-          username.text.trim(),
-          email.text.trim(),
-          number.text.trim(),
-          role, // Pass the role
-        );
+      // Afficher un message de succès
+      Fluttertoast.showToast(
+        msg: "Inscription réussie",
+        backgroundColor: Colors.green,
+      );
 
-        // ... reste de votre code ...
-      }else{
-        Fluttertoast.showToast(msg: "Erreur: Role non défini", backgroundColor: Colors.red);
-      }
+      // Rediriger vers la page de connexion ou une autre page
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
 
     } catch (e) {
       Fluttertoast.showToast(
-          msg: "Erreur: ${e.toString()}", backgroundColor: Colors.red);
+        msg: "Erreur: ${e.toString()}",
+        backgroundColor: Colors.red,
+      );
     }
   }
 }

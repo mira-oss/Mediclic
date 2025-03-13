@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 200, // Hauteur de l'image
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/image/cropped-sante_rouge.png'), // Remplace ceci par ton image
+                    image: AssetImage('assets/image/images.png'), // Remplace ceci par ton image
                   ),
                 ),
               ),
@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 'Connectez-vous',
                 style: TextStyle(
                   fontSize: 35,
-                  fontWeight: FontWeight.w800, color: Color.fromARGB(255, 0, 36, 134),
+                  fontWeight: FontWeight.w800, color: Colors.blue,
                 ),
               ),
             ),
@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: const Color.fromARGB(255, 244, 242, 255),
+        color: const Color.fromARGB(255, 242, 249, 255),
       ),
       child: TextFormField(
         controller: email,
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: const Color.fromARGB(255, 244, 242, 255),
+        color: const Color.fromARGB(255, 242, 249, 255),
       ),
       child: TextFormField(
         controller: password,
@@ -154,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
       width: 320,
       height: 50,
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 0, 36, 134),
+        color: Colors.blue,
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextButton(
@@ -236,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             );
           },
-          child: Text('Créer un compte', style: TextStyle(color: const Color.fromARGB(255, 37, 12, 255), fontWeight: FontWeight.bold, fontSize: 14),),
+          child: Text('Créer un compte', style: TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold, fontSize: 14),),
         ),
       ],
     );

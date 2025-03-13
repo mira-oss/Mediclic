@@ -40,7 +40,7 @@ class _SignUpState extends State<SignUp> {
                 'Inscrivez-vous',
                 style: TextStyle(
                   fontSize: 35,
-                  fontWeight: FontWeight.w700, color: Color.fromARGB(255, 0, 36, 134),
+                  fontWeight: FontWeight.w700, color: Colors.blue,
                 ),
               ),
             ),
@@ -69,7 +69,7 @@ class _SignUpState extends State<SignUp> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: const Color.fromARGB(255, 244, 242, 255),
+        color: const Color.fromARGB(255, 242, 249, 255),
       ),
       child: TextFormField(
         controller: controller,
@@ -93,7 +93,7 @@ class _SignUpState extends State<SignUp> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: const Color.fromARGB(255, 244, 242, 255),
+        color: const Color.fromARGB(255, 242, 249, 255),
       ),
       child: TextFormField(
         controller: email,
@@ -126,7 +126,7 @@ class _SignUpState extends State<SignUp> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: const Color.fromARGB(255, 244, 242, 255),
+        color: const Color.fromARGB(255, 242, 249, 255),
       ),
       child: TextFormField(
         controller: password,
@@ -156,7 +156,7 @@ class _SignUpState extends State<SignUp> {
       width: 340,
       height: 50,
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 0, 36, 134),
+        color: Colors.blue,
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextButton(
@@ -185,7 +185,7 @@ class _SignUpState extends State<SignUp> {
               MaterialPageRoute(builder: (context) => LoginScreen()),
             );
           },
-          child: Text('Connectez-vous', style: TextStyle(color: const Color.fromARGB(255, 37, 12, 255), fontWeight: FontWeight.bold, fontSize: 16),),
+          child: Text('Connectez-vous', style: TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold, fontSize: 16),),
         ),
       ],
     );

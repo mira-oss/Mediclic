@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -107,101 +108,115 @@ class _AjoutMedecinState extends State<AjoutMedecin> {
 
 
   Future<void> _creatMedecin() async {
-    if (_nomPrenomController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _codeProfessionnelController.text.isEmpty ||
-        _specialiteSelectionnee == null ||
-        _cliniqueSelectionnee == null) {
+  if (_nomPrenomController.text.isEmpty ||
+      _emailController.text.isEmpty ||
+      _codeProfessionnelController.text.isEmpty ||
+      _specialiteSelectionnee == null ||
+      _cliniqueSelectionnee == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Veuillez remplir tous les champs')),
+    );
+    return;
+  }
+
+  final bool emailValide = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+      .hasMatch(_emailController.text);
+  if (!emailValide) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Format d\'email invalide')),
+    );
+    return;
+  }
+
+  final bool codeValide = RegExp(r'^\d+\/ONMB\/[A-Z]{3}\/\d{4}$')
+      .hasMatch(_codeProfessionnelController.text);
+  if (!codeValide) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text(
+              'Format du code professionnel invalide. Ex: 250/ONMB/ATL/2016')),
+    );
+    return;
+  }
+
+  final motDePasse = _genererMotDePasse();
+
+  try {
+   
+    List<String> signInMethods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(_emailController.text.trim());
+    if (signInMethods.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veuillez remplir tous les champs')),
+        SnackBar(content: Text('Cet e-mail est déjà utilisé par un autre compte.')),
       );
       return;
     }
 
-    final bool emailValide = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-        .hasMatch(_emailController.text);
-    if (!emailValide) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Format d\'email invalide')),
-      );
-      return;
-    }
-    final bool codeValide = RegExp(r'^\d+\/ONMB\/[A-Z]{3}\/\d{4}$')
-        .hasMatch(_codeProfessionnelController.text);
-    if (!codeValide) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text(
-                'Format du code professionnel invalide. Ex: 250/ONMB/ATL/2016')),
-      );
-      return;
-    }
+   
+    String userId = await FirestoreServices().addMedecin(
+      _nomPrenomController.text.trim(),
+      _emailController.text.trim(),
+      _codeProfessionnelController.text.trim(),
+      _specialiteSelectionnee!,
+      _cliniqueSelectionnee!,
+      _numberController.text.trim(),
+      motDePasse,
+    );
 
-    final motDePasse = _genererMotDePasse();
+  
+    await FirebaseAuth.instance.sendPasswordResetEmail(
+      email: _emailController.text.trim(),
+    );
 
-    try {
-      String userId = FirebaseFirestore.instance.collection('users').doc().id;
-      await FirestoreServices().addMedecin(
-        _nomPrenomController.text.trim(),
-        _emailController.text.trim(),
-        _codeProfessionnelController.text.trim(),
-        _specialiteSelectionnee!,
-        _cliniqueSelectionnee!,
-        _numberController.text.trim(),
-        motDePasse
-      );
-
-      _nomPrenomController.clear();
-      _emailController.clear();
-      _numberController.clear();
-      _codeProfessionnelController.clear();
-      setState(() {
-        _specialiteSelectionnee = null;
-        _cliniqueSelectionnee = null;
-      });
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: const Color.fromARGB(255, 221, 223, 226),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Le compte du médecin a été créé avec succes"),
-                SizedBox(height: 10),
-                Text(
-                    "Un mot de passe temporaire a été généré et sera envoyé au médecin par notification."),
-                SizedBox(height: 10),
-                Text("Email: ${_emailController.text.trim()}",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-      Fluttertoast.showToast(
-        msg: "Medecin crée avec succes!",
+    // Afficher un message de succès
+    showDialog(
+  context: context,
+  builder: (BuildContext context) {
+    return AlertDialog(
+      title: Text('Mot de passe temporaire'),
+      content: Text('Le mot de passe temporaire est : $motDePasse'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('OK'),
+        ),
+      ],
+    );
+  },
+);
+    Fluttertoast.showToast( msg: "Medecin crée avec succes!",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         backgroundColor: Colors.green,
         textColor: Colors.white,
       );
-    } catch (e) {
-      print("Erreur lors de la création du médecin: $e");
+
+    
+    _nomPrenomController.clear();
+    _emailController.clear();
+    _numberController.clear();
+    _codeProfessionnelController.clear();
+    setState(() {
+      _specialiteSelectionnee = null;
+      _cliniqueSelectionnee = null;
+    });
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'email-already-in-use') {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la création du médecin: $e')),
+        SnackBar(content: Text('Cet e-mail est déjà utilisé par un autre compte.')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur Firebase Auth: ${e.message}')),
       );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Erreur inattendue: $e')),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {

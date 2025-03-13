@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirestoreServices {
   final CollectionReference users =
@@ -20,26 +21,39 @@ class FirestoreServices {
       .catchError((error) => print('Erreur : $error'));
   }
 
-  Future<void> addMedecin(String username, String email, String codeProfessionnel, 
-                         String specialite, String clinique,String number, String motDePasse) async {
-    String userId = users.doc().id;
-    
-    Map<String, dynamic> medecinData = {
-      'username': username,
+  Future<String> addMedecin(String nom, String email, String code, String specialite, String clinique, String numero, String motDePasse) async {
+  try {
+   
+    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email,
+      password: motDePasse,
+    );
+
+
+    String userId = userCredential.user!.uid;
+
+   
+    await FirebaseFirestore.instance.collection('users').doc(userId).set({
+      'nom': nom,
       'email': email,
-      'number': number,
-      'role': "medecin",
-      'motDePasse': motDePasse,
-      'codeProfessionnel': codeProfessionnel,
+      'codeProfessionnel': code,
       'specialite': specialite,
       'clinique': clinique,
-      'dateCreation': FieldValue.serverTimestamp(),
-    };
-    
-    await users.doc(userId).set(medecinData)
-      .then((value) => print('Médecin ajouté'))
-      .catchError((error) => print('Erreur : $error'));
+      'numero': numero,
+      'role': 'medecin',
+      'createdAt': FieldValue.serverTimestamp(),
+      'motDePasseTemporaire': motDePasse,
+    });
+
+    return userId;
+  } on FirebaseAuthException catch (e) {
+    print("Erreur Firebase Auth: ${e.code} - ${e.message}");
+    throw e;
+  } catch (e) {
+    print("Erreur lors de la création du médecin: $e");
+    throw e;
   }
+}
   
   
 

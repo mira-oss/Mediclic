@@ -38,7 +38,7 @@ class _SignUpState extends State<SignUp> {
               key: formKey,
               child: Column(
                 children: [
-                  //Image.asset('assets/ybr.jpeg', width: 200),
+                  Image.asset( "assets/images/chic.png",width: 200),
                   SizedBox(height: 15),
                   _buildTextField(username, 'Username', Icons.person,
                       "Le username est obligatoire"),
@@ -183,13 +183,13 @@ class _SignUpState extends State<SignUp> {
         // Determine user role
          String role = await _firestoreServices.determineUserRole();
 
-        // Add user to Firestore with role
+        
         await _firestoreServices.addUser(userCredential.user!.uid,
             username.text.trim(), email.text.trim(), number.text.trim(),
             role,
             );
 
-        // Redirect based on role
+       
 
         Fluttertoast.showToast(
             msg: "Inscription réussie !", backgroundColor: Colors.green);

@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myhealth/acceuil.dart';
+import 'package:myhealth/ajout_clinique.dart';
 import 'package:myhealth/ajout_specialit%C3%A9.dart';
 import 'package:myhealth/auth/login.dart';
 import 'package:myhealth/firebase_options.dart';
+import 'package:myhealth/profil_admin.dart';
 import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
 
 Future<void> main() async {
@@ -22,10 +25,29 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home:  AuthWrapper(),
     );
   }
 }
+class AuthWrapper extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: _auth.authStateChanges(),
+      builder: (context, snapshot) {
+        
+        if (snapshot.hasData) {
+          return MyHomePage();
+        }
+       
+        return LoginScreen();
+      },
+    );
+  }
+}
+
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -38,6 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final pages = [
     Acceuil(),
     AjoutSpecialite(),
+    AjoutClinique(),
+    ProfilAdmin()
   ];
   bool _colorful = false;
   @override
@@ -100,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
               selectedIndex: selectedIndex,
               barItems: <BarItem>[
                 BarItem(
-                  icon: Icons.event,
+                  icon: Icons.home,
                   title: 'Home',
                 ),
                 BarItem(
@@ -112,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: ' Clinique',
                 ),
                 BarItem(
-                  icon: Icons.tune_rounded,
+                  icon: Icons.person,
                   title: 'Profil',
                 ),
               ],

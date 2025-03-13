@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
               key: formKey,
               child: Column(
                 children: [
-                  //Image.asset('assets/ybr.jpeg', width: 200),
+                Image.asset( "assets/images/chic.png",width: 200),
                   SizedBox(height: 15),
                   _buildEmailField(),
                   _buildPasswordField(),
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildLoginButton() {
     return Container(
-      width: 320,
+      width: 340,
       height: 50,
       decoration: BoxDecoration(
         color: Colors.blue,

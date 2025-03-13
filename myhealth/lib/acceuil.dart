@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:myhealth/ajout_medecin.dart';
+import 'package:myhealth/liste_medecin.dart';
+import 'package:myhealth/services/firestor_services.dart';
 
 class Acceuil extends StatefulWidget {
   const Acceuil({super.key});
@@ -10,6 +13,65 @@ class Acceuil extends StatefulWidget {
 }
 
 class _AcceuilState extends State<Acceuil> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirestoreServices _firestoreServices = FirestoreServices();
+  String username = "Doc";
+  // bool isLoading = true;
+
+   @override
+  void initState() {
+    super.initState();
+    _getUserData();
+  }
+
+  Future<void> _getUserData() async {
+    setState(() {
+     // isLoading = true;
+    });
+
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+       
+        if (user.displayName != null && user.displayName!.isNotEmpty) {
+          setState(() {
+            username = user.displayName!;
+            //isLoading = false;
+          });
+        } else {
+          
+          DocumentSnapshot userData = await _firestoreServices.getUserById(user.uid);
+          if (userData.exists && userData.data() != null) {
+            Map<String, dynamic> data = userData.data() as Map<String, dynamic>;
+            if (data.containsKey('username')) {
+              setState(() {
+                username = data['username'];
+               // isLoading = false;
+              });
+            } else {
+              setState(() {
+              //  isLoading = false;
+              });
+            }
+          } else {
+            setState(() {
+            //  isLoading = false;
+            });
+          }
+        }
+      } else {
+        setState(() {
+         // isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Erreur lors de la récupération des données utilisateur: $e");
+      setState(() {
+       // isLoading = false;
+      });
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -23,10 +85,12 @@ class _AcceuilState extends State<Acceuil> {
             Row(
               children: [
                 CircleAvatar(
-                    backgroundImage: AssetImage('assets/images/avatar.png')),
+                    backgroundImage: AssetImage('assets/images/avatar1.jpeg')),
                 Padding(
                   padding: const EdgeInsets.only(left: 5),
-                  child: Text("Hello ,Doc"),
+                 child: //isLoading
+                           // ? CircularProgressIndicator(strokeWidth: 2)
+                             Text("Hello, $username"),
                 ),
               ],
             ),
@@ -70,12 +134,15 @@ class _AcceuilState extends State<Acceuil> {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => AjoutMedecin()));
             }),
-            /* _buildDashboardCard(
-                'Commandes en cours', 'assets/images/panier1.png', () {}),
+             _buildDashboardCard(
+                'Liste des Medecins', 'assets/images/panier1.png', (){
+                  Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ListeMedecin()));
+                }),
             _buildDashboardCard(
-                'Demande marchand', 'assets/images/enveloppe2.png', () {}),
+                'Nombre de Specialité', 'assets/images/enveloppe2.png', () {}),
             _buildDashboardCard(
-                'Transactions', 'assets/images/transaction.png', () {}),*/
+                'Nombre de clinique', 'assets/images/transaction.png', () {}),
           ],
         ),
       ]),
@@ -90,7 +157,7 @@ class _AcceuilState extends State<Acceuil> {
       onTap: onTap,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        color: Colors.grey[300],
+        color: Colors.lightBlue[50], 
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
@@ -98,7 +165,7 @@ class _AcceuilState extends State<Acceuil> {
             children: [
               CircleAvatar(
                 backgroundImage: AssetImage(imagePath),
-                backgroundColor: const Color.fromARGB(255, 37, 163, 221),
+                backgroundColor:  Colors.white,
               ),
               SizedBox(height: 10),
               Text(title, textAlign: TextAlign.center),

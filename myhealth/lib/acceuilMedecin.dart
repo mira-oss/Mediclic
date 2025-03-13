@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myhealth/ajout_medecin.dart';
+import 'package:myhealth/liste_medecin.dart';
 
 class Acceuilmedecin extends StatefulWidget {
   const Acceuilmedecin({super.key});
@@ -10,9 +12,103 @@ class Acceuilmedecin extends StatefulWidget {
 class _AcceuilmedecinState extends State<Acceuilmedecin> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: const Text("Accueil Medecin")),
-    );
+    return SafeArea(
+        child: Padding(
+      padding: EdgeInsets.all(15),
+      child: SingleChildScrollView(
+      child: Column(children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                    backgroundImage: AssetImage("  assets/images/avatar1.jpeg"   )),
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: Text("Hello ,Doc"),
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(
+          height:5,
+        ),
+        Container(
+          padding: EdgeInsets.only(top:5),
+          child: TextField(
+            decoration: InputDecoration(
+              hintText: 'Search',
+              suffixIcon: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.filter_list_outlined),
+              ),
+              prefixIcon: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.search),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          "DASHBORD",
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 10),
+        GridView.count(
+          shrinkWrap: true,
+          crossAxisCount: 2,
+          childAspectRatio: 1.7,
+          children: [
+            _buildDashboardCard('Ajout medecin', 'assets/images/personne.jpeg',
+                () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AjoutMedecin()));
+            }),
+             _buildDashboardCard(
+                'Liste des Medecins', 'assets/images/panier1.png', (){
+                  Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ListeMedecin()));
+                }),
+            /*_buildDashboardCard(
+                'Demande marchand', 'assets/images/enveloppe2.png', () {}),
+            _buildDashboardCard(
+                'Transactions', 'assets/images/transaction.png', () {}),*/
+          ],
+        ),
+      ]),
+    ),
+    ));
     
+  }
+
+  Widget _buildDashboardCard(
+      String title, String imagePath, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        color: Colors.lightBlue[50], 
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundImage: AssetImage(imagePath),
+                backgroundColor:  Colors.white,
+              ),
+              SizedBox(height: 10),
+              Text(title, textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

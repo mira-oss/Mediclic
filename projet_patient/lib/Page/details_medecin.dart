@@ -298,15 +298,21 @@ class _DetailsMedecinState extends State<DetailsMedecin> {
           return Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("${dispo['jour']}:", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.blue)),
                 SizedBox(width: 10),
-                Text("${dispo['heures'][0]}", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.grey))
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: dispo['heures'].map<Widget>((heure) {
+                    return Text(heure, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.grey));
+                  }).toList(),
+                ),
               ],
             ),
           );
         }).toList(),
-),
+)
                 ],
               )
 

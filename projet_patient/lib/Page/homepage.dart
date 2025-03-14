@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projet_patient/Page/chat_gemini_page.dart';
 import 'package:projet_patient/Page/consultation.dart';
+import 'package:projet_patient/Page/localisation_clinique.dart';
 import 'package:projet_patient/materiels/pageview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -357,6 +358,10 @@ class _AcceuilPageState extends State {
                 ),
                 InkWell(
                   onTap: () {
+                    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapsPage()),
+    );
                         print("Recherche de clinique !");
                   },
                   borderRadius: BorderRadius.circular(10),

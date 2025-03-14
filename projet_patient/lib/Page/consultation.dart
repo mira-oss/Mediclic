@@ -52,7 +52,7 @@ class _ConsultationPageState extends State<ConsultationPage> {
     getDoctors().then((doctors) {
       setState(() {
         _filteredDoctors = doctors
-            .where((doctor) => (doctor['username'] as String)
+            .where((doctor) => (doctor['nom'] as String)
                 .toLowerCase()
                 .contains(query.toLowerCase()) ||
             (doctor['specialite'] as String)
@@ -129,7 +129,7 @@ class _ConsultationPageState extends State<ConsultationPage> {
                     itemCount: displayDoctors.length,
                     itemBuilder: (context, index) {
                       Map<String, dynamic> doctor = displayDoctors[index];
-                      String nom = doctor['username'] ?? 'Nom inconnu';
+                      String nom = doctor['nom'] ?? 'Nom inconnu';
                       String specialite = doctor['specialite'] ?? 'Spécialité inconnue';
 
                       return Card(

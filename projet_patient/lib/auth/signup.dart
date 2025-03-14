@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:projet_patient/auth/login.dart';
-//import 'package:manag_app/user/user_dashboard.dart';
 import 'package:projet_patient/services/firestore_service.dart';
 
 class SignUp extends StatefulWidget {
@@ -191,7 +190,8 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Future<void> _signUpUser() async {
+
+ Future<void> _signUpUser() async {
   if (formKey.currentState!.validate()) {
     try {
       UserCredential userCredential =
@@ -200,34 +200,51 @@ class _SignUpState extends State<SignUp> {
         password: password.text.trim(),
       );
 
-      // Ajout de l'utilisateur avec le rôle "patient" automatique
+      print("Nouvel utilisateur créé : ${userCredential.user!.uid}");
+
+      // Ajout de l'utilisateur avec génération du code unique
       await _firestoreServices.addUser(
-        userCredential.user!.uid,
+        userCredential.user!.uid, // Utiliser l'UID de Firebase Auth
         username.text.trim(),
         email.text.trim(),
         number.text.trim(),
       );
 
-      // Afficher un message de succès
-      Fluttertoast.showToast(
-        msg: "Inscription réussie",
-        backgroundColor: Colors.green,
-      );
+      // Vérifier si le widget est toujours monté avant d'afficher un message ou de naviguer
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: "Inscription réussie. Un code unique vous a été envoyé par email.",
+          backgroundColor: Colors.green,
+        );
 
-      // Rediriger vers la page de connexion ou une autre page
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
-
+        // Rediriger vers la page de connexion
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        String errorMessage = "Erreur lors de l'inscription";
+        if (e.code == 'email-already-in-use') {
+          errorMessage = "Cet email est déjà utilisé.";
+        } else if (e.code == 'weak-password') {
+          errorMessage = "Le mot de passe est trop faible.";
+        } else if (e.code == 'invalid-email') {
+          errorMessage = "L'email est invalide.";
+        }
+        Fluttertoast.showToast(
+          msg: errorMessage,
+          backgroundColor: Colors.red,
+        );
+      }
     } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Erreur: ${e.toString()}",
-        backgroundColor: Colors.red,
-      );
+      if (mounted) {
+        Fluttertoast.showToast(
+          msg: "Erreur inattendue : ${e.toString()}",
+          backgroundColor: Colors.red,
+        );
+      }
     }
   }
-}
-}
-
-
+}}

@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myhealth/acceuil.dart';
+import 'package:myhealth/acceuilMedecin.dart';
 import 'package:myhealth/ajout_clinique.dart';
 import 'package:myhealth/ajout_specialit%C3%A9.dart';
 import 'package:myhealth/auth/login.dart';
@@ -37,10 +39,39 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: _auth.authStateChanges(),
       builder: (context, snapshot) {
-        
         if (snapshot.hasData) {
-          return MyHomePage();
+          // recuperer son rôle
+          return FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(snapshot.data!.uid)
+                .get(),
+            builder: (context, userSnapshot) {
+              if (userSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (userSnapshot.hasData && userSnapshot.data!.exists) {
+                var userData = userSnapshot.data!.data() as Map<String, dynamic>;
+                String role = userData['role'] ?? 'clinique';
+
+                // Rediriger en fonction du rôle
+                switch (role) {
+                  case 'clinique':
+                    return MyHomePage();
+                  case 'medecin':
+                    return Acceuilmedecin(); 
+                  default:
+                    return LoginScreen(); 
+                }
+              } else {
+
+                return LoginScreen();
+              }
+            },
+          );
         }
+
        
         return LoginScreen();
       },

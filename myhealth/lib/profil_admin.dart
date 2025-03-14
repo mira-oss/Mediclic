@@ -78,12 +78,12 @@ class _ProfilAdminState extends State<ProfilAdmin> {
                       children: [
                         CircleAvatar(
                     backgroundImage: AssetImage('assets/images/avatar1.jpeg'),
-                    radius: 20),
+                    radius: 60),
                          Text('Nom: $username'),
                         Text('Email: $email'),
                         SizedBox(height: 15),
                         Container(
-                          height: 480,
+                          height: 515,
                           decoration: BoxDecoration(
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(25),

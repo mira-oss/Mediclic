@@ -3,11 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myhealth/auth/login.dart';
 import 'package:myhealth/services/firestor_services.dart';
-//import 'package:fluttertoast/fluttertoast.dart';
-//import 'package:manag_app/auth/login.dart';
-//import 'package:manag_app/admin/home.dart';
-//import 'package:manag_app/user/user_dashboard.dart';
-//import 'package:manag_app/services/firestore_service.dart';
+
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});

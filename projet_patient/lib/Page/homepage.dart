@@ -4,6 +4,7 @@ import 'package:projet_patient/Page/consultation.dart';
 import 'package:projet_patient/Page/localisation_clinique.dart';
 import 'package:projet_patient/materiels/pageview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AcceuilPage extends StatefulWidget {
   const AcceuilPage({super.key});
@@ -15,7 +16,7 @@ class AcceuilPage extends StatefulWidget {
 }
 
 class _AcceuilPageState extends State {
-  User? _user;  // Déclare _user comme étant nullable
+  String username = '';
   
   // Liste des éléments à afficher dans le Row défilable
   final List<Map<String, String>> items = [
@@ -25,22 +26,32 @@ class _AcceuilPageState extends State {
     {'image': 'assets/image/Brain Vector.png', 'title': 'Néphrologie'},
     // Ajoute plus d'éléments ici si nécessaire
   ];
-  @override
-  void initState() {
-    super.initState();
-    _getUser();  // Appel de la fonction pour récupérer l'utilisateur
-  }
 
-  // Fonction pour récupérer l'utilisateur connecté
-  Future<void> _getUser() async {
-    final user = FirebaseAuth.instance.currentUser;
+
+Future<void> _getUserInfo() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
     if (user != null) {
-      setState(() {
-        _user = user;  // Mettre à jour l'état avec l'utilisateur actuel
-      });
+      // Récupérer les informations utilisateur depuis Firestore
+      var userInfo = await FirebaseFirestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'patient')
+          .where('email', isEqualTo: user.email)
+          .get();
+
+      if (userInfo.docs.isNotEmpty) {
+        setState(() {
+          username = userInfo.docs[0]['username'];
+        });
+      }
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _getUserInfo();
+  }
 
 
   @override
@@ -58,13 +69,12 @@ class _AcceuilPageState extends State {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Affichage du texte personnalisé avec le nom de l'utilisateur
-                if (_user != null) // Vérifie que l'utilisateur est connecté
                   Row(
   children: [
-    Text(
-      'Salut ${_user?.displayName ?? _user?.email ?? "Utilisateur"}!',  // Utilisation de l'opérateur '?' pour éviter une exception si '_user' est null
-      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+    Text("Salut", style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),),
+    SizedBox(width: 5,),
+    Text( username,
+      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20, color: Colors.blue),
     ),
   ],
 ),

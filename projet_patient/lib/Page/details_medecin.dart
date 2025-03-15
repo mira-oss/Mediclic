@@ -48,18 +48,24 @@ class _DetailsMedecinState extends State<DetailsMedecin> {
 
   Future<void> _fetchDisponibilites() async {
     try {
+
+      String medecinId = widget.medecin['id'];
+      print("Recherche des disponibilités pour le médecin ID: $medecinId");
+      print("ID du médecin recherché : ${widget.medecin['id']}");
+
+
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('disponibilites')
-          .where('medecinId', isEqualTo: widget.medecin['id'])
-          .get();
+    .collection('disponibilites')
+    .where('medecinId', isEqualTo: widget.medecin['id']) // Filtrer par ID médecin
+    .get();
 
-      List<Map<String, dynamic>> fetchedDisponibilites = querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
 
-      setState(() {
-        disponibilites = fetchedDisponibilites;
+setState(() {
+  disponibilites = querySnapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
       });
+      print("Disponibilités filtrées: $disponibilites");
     } catch (e) {
       print("Erreur lors de la récupération des disponibilités: $e");
     }
@@ -163,7 +169,7 @@ class _DetailsMedecinState extends State<DetailsMedecin> {
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     onPressed: () {
-                                      _launchSMS(widget.medecin['numero'], 'Bonjour, comment allez-vous ?');
+                                      _launchSMS(widget.medecin['numero'], 'Bonjour, comment allez-vous ? J\'aimerais prendre Rendez-vous ! ');
                                     },
                                     child: Icon(
                                       Icons.message,
@@ -279,41 +285,31 @@ class _DetailsMedecinState extends State<DetailsMedecin> {
                 ],
               ),
               SizedBox(height: 10,),
-              Row(
+              Container(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: disponibilites.isEmpty
+                      ? [Text("Aucune disponibilité", style: TextStyle(color: Colors.grey, fontSize: 18))]
+                      : disponibilites.map((dispo) {
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 10),
+                            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text("${dispo['jour']}:", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.blue)),
+                  SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Jours:", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.blue),),
-                      SizedBox(height: 10,),
-                      Text("Heures:", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.blue),)
-                    ],
+                    children: dispo['heures'].map<Widget>((heure) {
+                      return Text(heure, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.grey));
+                    }).toList(),
                   ),
-                  SizedBox(width: 25,),
-                  Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: disponibilites.isEmpty
-      ? [Text("Aucune disponibilité", style: TextStyle(color: Colors.grey, fontSize: 18))]
-      : disponibilites.map((dispo) {
-          return Padding(
-            padding: EdgeInsets.only(bottom: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("${dispo['jour']}:", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.blue)),
-                SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: dispo['heures'].map<Widget>((heure) {
-                    return Text(heure, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.grey));
-                  }).toList(),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-)
                 ],
+                            ),
+                          );
+                        }).toList(),
+                ),
               )
 
             ],

@@ -4,9 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myhealth/ajout_medecin.dart';
 import 'package:myhealth/disponinit%C3%A9.dart';
-import 'package:myhealth/dossier_medical.dart';
 import 'package:myhealth/liste_medecin.dart';
 import 'package:myhealth/profilMedecin.dart';
+import 'package:myhealth/recherche_dossier.dart';
 import 'package:myhealth/services/firestor_services.dart';
 
 class Acceuilmedecin extends StatefulWidget {
@@ -25,7 +25,7 @@ class _AcceuilmedecinState extends State<Acceuilmedecin> {
 
   final List<Widget> _pages = [
     const AcceuilmedecinContent(),
-    const ListeMedecin(),
+    //const ListeMedecin(),
     const Disponinite(),
     const Profilmedecin(),
   ];
@@ -165,10 +165,10 @@ class AcceuilmedecinContent extends StatelessWidget {
                     'Dossier Medical',
                     'assets/images/personne.jpeg',
                     () {
-                      Navigator.push(
+                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DossierMedicalForm()),
+                            builder: (context) => SearchPatientScreen()),
                       );
                     },
                   ),

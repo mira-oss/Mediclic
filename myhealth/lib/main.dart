@@ -47,10 +47,7 @@ class AuthWrapper extends StatelessWidget {
                 .doc(snapshot.data!.uid)
                 .get(),
             builder: (context, userSnapshot) {
-              if (userSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
+             
               if (userSnapshot.hasData && userSnapshot.data!.exists) {
                 var userData = userSnapshot.data!.data() as Map<String, dynamic>;
                 String role = userData['role'] ?? 'clinique';

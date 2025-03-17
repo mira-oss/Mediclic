@@ -1,9 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UpdateMedicalRecordScreen extends StatefulWidget {
   final Map<String, dynamic> patientRecord;
@@ -36,18 +35,22 @@ class _UpdateMedicalRecordScreenState extends State<UpdateMedicalRecordScreen> {
   late TextEditingController _professionController;
   late TextEditingController _habitudesAlimentairesController;
   late TextEditingController _nomExamenController;
-  String? _pdfUrl; // Pour stocker l'URL du fichier PDF
-  bool _isUploading = false; // Pour gérer l'état de l'upload
   late TextEditingController _resultatExamenController;
   late TextEditingController _hypothesesDiagnostiquesController;
   late TextEditingController _diagnosticFinalController;
+  String? _pdfUrl;
+  bool _isUploading = false;
 
   @override
   void initState() {
     super.initState();
-    _tailleController = TextEditingController();
-    _poidsController = TextEditingController();
-    _groupeSanguinController = TextEditingController();
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
+    _tailleController = TextEditingController(text: widget.patientRecord['informationsPersonnelles']?['taille']);
+    _poidsController = TextEditingController(text: widget.patientRecord['informationsPersonnelles']?['poids']);
+    _groupeSanguinController = TextEditingController(text: widget.patientRecord['informationsPersonnelles']?['groupeSanguin']);
     _medicamentsPrecedentsController = TextEditingController();
     _interventionsChirurgicalesController = TextEditingController();
     _therapiesSuiviesController = TextEditingController();
@@ -70,57 +73,30 @@ class _UpdateMedicalRecordScreenState extends State<UpdateMedicalRecordScreen> {
   }
 
   Future<void> _uploadPdf() async {
-  setState(() {
-    _isUploading = true;
-  });
-
-  try {
-    // Sélectionner un fichier PDF
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
-
-    if (result != null) {
-      PlatformFile file = result.files.first;
-
-      // Vérifier si le fichier contient des données
-      if (file.bytes == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : le fichier ne peut pas être lu.')),
-        );
-        return;
+    setState(() => _isUploading = true);
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+      if (result != null) {
+        PlatformFile file = result.files.first;
+        if (file.bytes == null) throw Exception('Le fichier ne peut pas être lu.');
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        Reference storageReference = FirebaseStorage.instance.ref().child('examens/$fileName.pdf');
+        await storageReference.putData(file.bytes!);
+        String downloadURL = await storageReference.getDownloadURL();
+        setState(() => _pdfUrl = downloadURL);
       }
-
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      Reference storageReference = FirebaseStorage.instance.ref().child('examens/$fileName.pdf');
-
-      // Upload du fichier
-      await storageReference.putData(file.bytes!);
-      String downloadURL = await storageReference.getDownloadURL();
-
-      setState(() {
-        _pdfUrl = downloadURL;
-      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur lors de l\'upload du fichier : $e')));
+    } finally {
+      setState(() => _isUploading = false);
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Erreur lors de l\'upload du fichier : $e')),
-    );
-  } finally {
-    setState(() {
-      _isUploading = false;
-    });
   }
-}
 
   Future<void> _launchPdf(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Impossible d\'ouvrir le fichier PDF')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Impossible d\'ouvrir le fichier PDF')));
     }
   }
 
@@ -136,122 +112,59 @@ class _UpdateMedicalRecordScreenState extends State<UpdateMedicalRecordScreen> {
           key: _formKey,
           child: Column(
             children: [
-              // Informations personnelles
-              _buildSectionTitle('Informations Personnelles'),
-              _buildTextFormField('Taille', _tailleController),
-              _buildTextFormField('Poids', _poidsController),
-              _buildTextFormField('Groupe Sanguin', _groupeSanguinController),
-
-              // Traitements antérieurs
-              _buildSectionTitle('Traitements Antérieurs'),
-              _buildTextFormField('Médicaments précédents', _medicamentsPrecedentsController),
-              _buildTextFormField('Interventions chirurgicales', _interventionsChirurgicalesController),
-              _buildTextFormField('Thérapies suivies', _therapiesSuiviesController),
-
-              // Antécédents
-              _buildSectionTitle('Antécédents'),
-              _buildTextFormField('Antécédents médicaux', _antecedentsMedicauxController),
-              _buildTextFormField('Antécédents chirurgicaux', _antecedentsChirurgicauxController),
-              _buildTextFormField('Antécédents gynéco-obstétriques', _antecedentsGynecoObstetriquesController),
-              _buildTextFormField('Antécédents familiaux', _antecedentsFamiliauxController),
-
-              // Allergies
-              _buildSectionTitle('Allergies'),
-              _buildTextFormField('Allergies médicamenteuses', _allergiesMedicamentsController),
-              _buildTextFormField('Allergies alimentaires', _allergiesAlimentairesController),
-              _buildTextFormField('Réactions observées', _reactionsObserveesController),
-
-              // Déparasitage
-              _buildSectionTitle('Déparasitage'),
-              _buildTextFormField('Type de traitement', _typeTraitementController),
-              _buildTextFormField('Fréquence', _frequenceTraitementController),
-
-              // Enquête sociale
-              _buildSectionTitle('Enquête Sociale'),
-              _buildTextFormField('Situation familiale', _situationFamilialeController),
-              _buildTextFormField('Profession', _professionController),
-              _buildTextFormField('Habitudes alimentaires', _habitudesAlimentairesController),
-
-              // Examen physique
-              _buildSectionTitle('Examen Physique'),
-              _buildTextFormField('Nom de l\'examen', _nomExamenController),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _isUploading ? null : _uploadPdf,
-                child: _isUploading
-                    ? CircularProgressIndicator()
-                    : Text('Uploader un fichier PDF'),
-              ),
-              SizedBox(height: 10),
-              if (_pdfUrl != null)
-                InkWell(
-                  onTap: () => _launchPdf(_pdfUrl!),
-                  child: Text(
-                    'Télécharger le résultat de l\'examen (PDF)',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
+              _buildSection('Informations Personnelles', [
+                _buildTextFormField('Taille', _tailleController, required: false),
+                _buildTextFormField('Poids', _poidsController, required: false),
+                _buildTextFormField('Groupe Sanguin', _groupeSanguinController, required: false),
+              ]),
+              _buildSection('Traitements Antérieurs', [
+                _buildTextFormField('Médicaments précédents', _medicamentsPrecedentsController, required: false),
+                _buildTextFormField('Interventions chirurgicales', _interventionsChirurgicalesController, required: false),
+                _buildTextFormField('Thérapies suivies', _therapiesSuiviesController, required: false),
+              ]),
+              _buildSection('Antécédents', [
+                _buildTextFormField('Antécédents médicaux', _antecedentsMedicauxController, required: false),
+                _buildTextFormField('Antécédents chirurgicaux', _antecedentsChirurgicauxController, required: false),
+                _buildTextFormField('Antécédents gynéco-obstétriques', _antecedentsGynecoObstetriquesController, required: false),
+                _buildTextFormField('Antécédents familiaux', _antecedentsFamiliauxController, required: false),
+              ]),
+              _buildSection('Allergies', [
+                _buildTextFormField('Allergies médicamenteuses', _allergiesMedicamentsController, required: false),
+                _buildTextFormField('Allergies alimentaires', _allergiesAlimentairesController, required: false),
+                _buildTextFormField('Réactions observées', _reactionsObserveesController, required: false),
+              ]),
+              _buildSection('Déparasitage', [
+                _buildTextFormField('Type de traitement', _typeTraitementController, required: false),
+                _buildTextFormField('Fréquence', _frequenceTraitementController, required: false),
+              ]),
+              _buildSection('Enquête Sociale', [
+                _buildTextFormField('Situation familiale', _situationFamilialeController, required: false),
+                _buildTextFormField('Profession', _professionController, required: false),
+                _buildTextFormField('Habitudes alimentaires', _habitudesAlimentairesController, required: false),
+              ]),
+              _buildSection('Examen Physique', [
+                _buildTextFormField('Nom de l\'examen', _nomExamenController, required: false),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: _isUploading ? null : _uploadPdf,
+                  child: _isUploading ? CircularProgressIndicator() : Text('Uploader un fichier PDF'),
+                ),
+                if (_pdfUrl != null)
+                  InkWell(
+                    onTap: () => _launchPdf(_pdfUrl!),
+                    child: Text(
+                      'Télécharger le résultat de l\'examen (PDF)',
+                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                     ),
                   ),
-                ),
-
-              // Diagnostic
-              _buildSectionTitle('Diagnostic'),
-              _buildTextFormField('Hypothèses diagnostiques', _hypothesesDiagnostiquesController),
-              _buildTextFormField('Diagnostic final', _diagnosticFinalController),
-
-              // Bouton de sauvegarde
+              ]),
+              _buildSection('Diagnostic', [
+                _buildTextFormField('Hypothèses diagnostiques', _hypothesesDiagnostiquesController, required: false),
+                _buildTextFormField('Diagnostic final', _diagnosticFinalController, required: false),
+              ]),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    String currentDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
-
-                     if (widget.patientRecord['uniqueCode'] == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Erreur : uniqueCode non trouvé')),
-                      );
-                      return;
-                    }
-
-                    Map<String, dynamic> updatedRecord = {
-                      ...widget.patientRecord,
-                      'informationsPersonnelles': {
-                        ...widget.patientRecord['informationsPersonnelles'] ?? {},
-                        'taille': _tailleController.text,
-                        'poids': _poidsController.text,
-                        'groupeSanguin': _groupeSanguinController.text,
-                        'date': currentDate,
-                      },
-                      'traitementsAnterieurs': {
-                        ...widget.patientRecord['traitementsAnterieurs'] ?? {},
-                        'medicamentsPrecedents': [
-                          ...widget.patientRecord['traitementsAnterieurs']?['medicamentsPrecedents'] ?? [],
-                          ..._medicamentsPrecedentsController.text.split(','),
-                        ],
-                        'interventionsChirurgicales': [
-                          ...widget.patientRecord['traitementsAnterieurs']?['interventionsChirurgicales'] ?? [],
-                          ..._interventionsChirurgicalesController.text.split(','),
-                        ],
-                        'therapiesSuivies': [
-                          ...widget.patientRecord['traitementsAnterieurs']?['therapiesSuivies'] ?? [],
-                          ..._therapiesSuiviesController.text.split(','),
-                        ],
-                        'date': currentDate,
-                      },
-                      'examenPhysique': {
-                        ...widget.patientRecord['examenPhysique'] ?? {},
-                        'nomExamen': _nomExamenController.text,
-                        'resultatExamen': _pdfUrl, // URL du fichier PDF
-                        'date': currentDate,
-                      },
-                      // Ajoutez les autres sections ici...
-                    };
-
-                    await widget.onSave(updatedRecord);
-                    Navigator.pop(context);
-                  }
-                },
+                onPressed: _saveRecord,
                 child: Text('Enregistrer'),
               ),
             ],
@@ -261,29 +174,71 @@ class _UpdateMedicalRecordScreenState extends State<UpdateMedicalRecordScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10),
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+  Widget _buildSection(String title, List<Widget> children) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: ExpansionTile(
+        title: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        children: children,
       ),
     );
   }
 
-  Widget _buildTextFormField(String label, TextEditingController controller) {
+  Widget _buildTextFormField(String label, TextEditingController controller, {bool required = true}) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 5),
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(labelText: label),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Veuillez remplir ce champ';
-          }
-          return null;
-        },
+        validator: required
+            ? (value) {
+                if (value == null || value.isEmpty) return 'Veuillez remplir ce champ';
+                return null;
+              }
+            : null,
       ),
     );
+  }
+
+  void _saveRecord() async {
+    if (_formKey.currentState!.validate()) {
+      String currentDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+
+      Map<String, dynamic> updatedRecord = {
+        ...widget.patientRecord,
+        'informationsPersonnelles': {
+          ...widget.patientRecord['informationsPersonnelles'] ?? {},
+          'taille': _tailleController.text.isNotEmpty ? _tailleController.text : null,
+          'poids': _poidsController.text.isNotEmpty ? _poidsController.text : null,
+          'groupeSanguin': _groupeSanguinController.text.isNotEmpty ? _groupeSanguinController.text : null,
+          'date': currentDate,
+        },
+        'traitementsAnterieurs': {
+          ...widget.patientRecord['traitementsAnterieurs'] ?? {},
+          'medicamentsPrecedents': [
+            ...widget.patientRecord['traitementsAnterieurs']?['medicamentsPrecedents'] ?? [],
+            if (_medicamentsPrecedentsController.text.isNotEmpty) ..._medicamentsPrecedentsController.text.split(','),
+          ],
+          'interventionsChirurgicales': [
+            ...widget.patientRecord['traitementsAnterieurs']?['interventionsChirurgicales'] ?? [],
+            if (_interventionsChirurgicalesController.text.isNotEmpty) ..._interventionsChirurgicalesController.text.split(','),
+          ],
+          'therapiesSuivies': [
+            ...widget.patientRecord['traitementsAnterieurs']?['therapiesSuivies'] ?? [],
+            if (_therapiesSuiviesController.text.isNotEmpty) ..._therapiesSuiviesController.text.split(','),
+          ],
+          'date': currentDate,
+        },
+        'examenPhysique': {
+          ...widget.patientRecord['examenPhysique'] ?? {},
+          'nomExamen': _nomExamenController.text.isNotEmpty ? _nomExamenController.text : null,
+          'resultatExamen': _pdfUrl,
+          'date': currentDate,
+        },
+      };
+
+      await widget.onSave(updatedRecord);
+      Navigator.pop(context);
+    }
   }
 }

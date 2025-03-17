@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:projet_patient/Page/dossiermedical.dart';
+import 'package:projet_patient/Page/chat_gemini_page.dart';
 import 'package:projet_patient/Page/homepage.dart';
 import 'package:projet_patient/Page/profilepage.dart';
-import 'package:projet_patient/Page/rdvpage.dart';
 import 'package:projet_patient/auth/login.dart';
 import 'package:projet_patient/firebase_options.dart';
 import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
@@ -62,8 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedIndex = 0;
   final List<Widget> pages = [
     AcceuilPage(),
-    DossierPage(),
-    RdvPage(),
+    ChatGemini(),
     ProfilePage(),
   ];
 
@@ -100,9 +98,9 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedIndex: selectedIndex,
         barItems: <BarItem>[
           BarItem(icon: Icons.home, title: 'Accueil'),
-          BarItem(icon: Icons.menu_book, title: 'Dossier_Médical'),
-          BarItem(icon: Icons.event_available, title: 'Rendez-vous'),
+          BarItem(icon: Icons.child_care_outlined, title: 'Chatbot'),
           BarItem(icon: Icons.person, title: 'Profile'),
+          
         ],
       ),
     );

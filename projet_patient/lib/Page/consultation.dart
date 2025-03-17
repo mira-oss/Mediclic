@@ -174,7 +174,7 @@ class _ConsultationPageState extends State<ConsultationPage> {
                                           width: 0,
                                         ),
                                         image: const DecorationImage(
-                                          image: AssetImage('assets/image/docteur.png'),
+                                          image: AssetImage('assets/image/noir.jpg'),
                                           fit: BoxFit.cover,
                                         ),
                                       ),

@@ -48,28 +48,23 @@ class _DetailsMedecinState extends State<DetailsMedecin> {
 
   Future<void> _fetchDisponibilites() async {
     try {
-
-      String medecinId = widget.medecin['id'];
-      print("Recherche des disponibilités pour le médecin ID: $medecinId");
-      print("ID du médecin recherché : ${widget.medecin['id']}");
-
-
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-    .collection('disponibilites')
-    .where('medecinId', isEqualTo: widget.medecin['id']) // Filtrer par ID médecin
-    .get();
+          .collection('disponibilites')
+          .where('medecinId', isEqualTo: widget.medecin['id'])
+          .get();
 
+      List<Map<String, dynamic>> fetchedDisponibilites = querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
 
-setState(() {
-  disponibilites = querySnapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .toList();
+      setState(() {
+        disponibilites = fetchedDisponibilites;
       });
-      print("Disponibilités filtrées: $disponibilites");
     } catch (e) {
       print("Erreur lors de la récupération des disponibilités: $e");
     }
   }
+
 
 
   @override
@@ -119,7 +114,7 @@ setState(() {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                   image: DecorationImage(
-                                    image: AssetImage('assets/image/docteur.png'),
+                                    image: AssetImage('assets/image/noir.jpg'),
                                     fit: BoxFit.cover,
                                   ),
                                 ),

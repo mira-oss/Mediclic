@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projet_patient/Page/chat_gemini_page.dart';
 import 'package:projet_patient/Page/consultation.dart';
 import 'package:projet_patient/Page/localisation_clinique.dart';
+import 'package:projet_patient/Page/search_patient.dart';
 import 'package:projet_patient/materiels/pageview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -252,6 +253,10 @@ Future<void> _getUserInfo() async {
               children: [
                 InkWell(
                   onTap: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchPatientScreen()),
+                    );
                         print("Dossier médical cliqué !");
                   },
                   borderRadius: BorderRadius.circular(10),
@@ -263,7 +268,7 @@ Future<void> _getUserInfo() async {
                         color: Colors.white,
                         child: Container(
               padding: const EdgeInsets.all(10),
-              height: 170,
+              height: 120,
               width: 150,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,7 +306,7 @@ Future<void> _getUserInfo() async {
                         color: Colors.white,
                         child: Container(
               padding: const EdgeInsets.all(10),
-              height: 170,
+              height: 120,
               width: 150,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -345,7 +350,7 @@ Future<void> _getUserInfo() async {
                         color: Colors.white,
                         child: Container(
               padding: const EdgeInsets.all(10),
-              height: 170,
+              height: 120,
               width: 150,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,7 +388,7 @@ Future<void> _getUserInfo() async {
                         color: Colors.white,
                         child: Container(
               padding: const EdgeInsets.all(10),
-              height: 170,
+              height: 120,
               width: 150,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

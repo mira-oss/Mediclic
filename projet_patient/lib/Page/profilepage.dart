@@ -91,7 +91,7 @@ class _PresentPageState extends State<ProfilePage> {
                               width: 0,
                             ),
                             image: DecorationImage(
-                              image: AssetImage('assets/image/pr.jpg'),
+                              image: AssetImage('assets/image/profile.jpg'),
                               fit: BoxFit.cover,
                             ),
                           ),

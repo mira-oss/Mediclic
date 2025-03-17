@@ -4,7 +4,7 @@ import 'package:latlong2/latlong.dart' as latlng;
 import 'package:location/location.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'dart:math' as math;
 class MapsPage extends StatefulWidget {
   @override
   _MapsPageState createState() => _MapsPageState();
@@ -24,49 +24,67 @@ class _MapsPageState extends State<MapsPage> {
     _getCurrentLocation();
   }
 
+// Fonction pour ajouter les emplacements fictifs
+void _addFakeLocations(double lat, double lon) {
+  final distance = 5.0; // 5 km
+  final bearing = [0.0, 90.0, 180.0, 270.0]; // Directions (Nord, Est, Sud, Ouest)
+  final double earthRadius = 6371.0; // Rayon de la Terre en km
+
+  for (var i = 0; i < 4; i++) {
+    final double bearingRad = bearing[i] * math.pi / 180.0; // Angle en radians
+    final double latRad = lat * math.pi / 180.0;
+    final double lonRad = lon * math.pi / 180.0;
+    final double distanceRad = distance / earthRadius;
+
+    final double newLatRad = math.asin(math.sin(latRad) * math.cos(distanceRad) +
+        math.cos(latRad) * math.sin(distanceRad) * math.cos(bearingRad));
+
+    final double newLonRad = lonRad +
+        math.atan2(math.sin(bearingRad) * math.sin(distanceRad) * math.cos(latRad),
+            math.cos(distanceRad) - math.sin(latRad) * math.sin(newLatRad));
+
+    final double newLat = newLatRad * 180.0 / math.pi;
+    final double newLon = newLonRad * 180.0 / math.pi;
+
+    _clinics.add({
+      'name': 'Emplacement Fictif ${i + 1}',
+      'lat': newLat,
+      'lon': newLon,
+    });
+  }
+}
+
   // Fonction pour obtenir la position actuelle
   Future<void> _getCurrentLocation() async {
-    try {
-      var location = await _location.getLocation();
-      setState(() {
-        _currentLocation = location;
-      });
-      _mapController.move(
-        latlng.LatLng(location.latitude!, location.longitude!),
-        14.0,
-      );
-      _getHealthFacilities(location.latitude!, location.longitude!); // Récupérer les cliniques proches
-    } catch (e) {
-      print("Erreur lors de la récupération de la localisation: $e");
-    }
+  try {
+    var location = await _location.getLocation();
+    setState(() {
+      _currentLocation = location;
+    });
+    _mapController.move(
+      latlng.LatLng(location.latitude!, location.longitude!),
+      14.0,
+    );
+    _getHealthFacilities(location.latitude!, location.longitude!); // Récupérer les cliniques proches
+    _addFakeLocations(location.latitude!, location.longitude!); // Ajouter les emplacements fictifs
+  } catch (e) {
+    print("Erreur lors de la récupération de la localisation: $e");
   }
+}
 
   // Fonction pour récupérer les établissements de santé à proximité via Overpass API
   Future<void> _getHealthFacilities(double lat, double lon) async {
-    try {
-      final facilities = await getHealthFacilities(lat, lon);
-      setState(() {
-        _clinics = facilities;
-      });
-    } catch (e) {
-      print("Erreur lors de la récupération des cliniques: $e");
-    }
-  }
-
-  // Fonction pour rechercher les établissements de santé dans une ville via l'API Overpass
-  Future<void> _searchClinicsInCity(String cityName) async {
-    // Tu devras remplacer cette partie avec la géolocalisation de la ville ou utiliser un service externe
-    // Pour le moment, nous allons supposer que la ville est Cotonou et utiliser une requête Overpass pour cette ville
-    final lat = 6.3660; // Latitude de Cotonou (exemple)
-    final lon = 2.4270; // Longitude de Cotonou (exemple)
-    
+  try {
     final facilities = await getHealthFacilities(lat, lon);
     setState(() {
-      _clinics = facilities;
+      _clinics.addAll(facilities); // Ajouter les cliniques réelles aux emplacements fictifs
     });
+  } catch (e) {
+    print("Erreur lors de la récupération des cliniques: $e");
   }
+}
 
-  // Récupérer les établissements de santé via Overpass API
+  // Récupérer les établissements de santé à proximité via Overpass API
   Future<List<Map<String, dynamic>>> getHealthFacilities(double lat, double lon) async {
     final url = Uri.parse('https://overpass-api.de/api/interpreter');
     final query = '''
@@ -74,11 +92,17 @@ class _MapsPageState extends State<MapsPage> {
       (
         node["amenity"="hospital"](around:15000,$lat,$lon);
         node["amenity"="clinic"](around:15000,$lat,$lon);
+        way["amenity"="hospital"](around:15000,$lat,$lon);
+        way["amenity"="clinic"](around:15000,$lat,$lon);
+        relation["amenity"="hospital"](around:15000,$lat,$lon);
+        relation["amenity"="clinic"](around:15000,$lat,$lon);
       );
-      out body;
+      out center;
     ''';
 
+
     final response = await http.post(url, body: {'data': query});
+    print("Réponse Overpass : ${response.body}");
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -94,6 +118,33 @@ class _MapsPageState extends State<MapsPage> {
     } else {
       throw Exception('Erreur de récupération des données');
     }
+  }
+
+  // Fonction pour rechercher la ville avec l'API Nominatim
+  Future<void> _searchCity(String cityName) async {
+    final url = Uri.parse('https://nominatim.openstreetmap.org/search?city=$cityName&format=json&addressdetails=1');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data.isNotEmpty) {
+        final city = data[0];
+        final lat = double.parse(city['lat']);
+        final lon = double.parse(city['lon']);
+        _mapController.move(latlng.LatLng(lat, lon), 14.0); // Centrer la carte sur la ville
+      }
+    } else {
+      print("Erreur lors de la recherche de la ville");
+    }
+  }
+
+  // Fonction pour centrer la carte sur la clinique choisie
+  void _centerMapOnClinic(Map<String, dynamic> clinic) {
+    _mapController.move(
+      latlng.LatLng(clinic['lat'], clinic['lon']),
+      16.0, // zoom sur la clinique
+    );
   }
 
   @override
@@ -119,9 +170,10 @@ class _MapsPageState extends State<MapsPage> {
                 setState(() {
                   _searchQuery = value;
                 });
+
+                // Chercher la clinique ou la ville correspondante
                 if (_searchQuery.isNotEmpty) {
-                  // Effectuer la recherche des cliniques dans la ville donnée
-                  _searchClinicsInCity(_searchQuery);
+                  _searchClinicOrCity(_searchQuery);
                 }
               },
             ),
@@ -156,27 +208,41 @@ class _MapsPageState extends State<MapsPage> {
     );
   }
 
-  // Créer des marqueurs pour les cliniques proches
-  List<Marker> _buildClinicMarkers() {
-    List<Marker> markers = [];
+  // Rechercher une clinique ou une ville
+  void _searchClinicOrCity(String query) {
+    // Si le texte de la recherche est une ville, chercher la ville
+    _searchCity(query);
 
+    // Sinon chercher la clinique
     for (var clinic in _clinics) {
-      final clinicLatLng = latlng.LatLng(clinic['lat'], clinic['lon']);
-      if (_searchQuery.isEmpty || clinic['name'].toLowerCase().contains(_searchQuery.toLowerCase())) {
-        markers.add(Marker(
-          point: clinicLatLng,
-          width: 80,
-          height: 80,
-          child: GestureDetector(
-            onTap: () => _showClinicDialog(clinic['name']),
-            child: Icon(Icons.local_hospital, color: Colors.blue, size: 40.0),
-          ),
-        ));
+      if (clinic['name'].toLowerCase().contains(query.toLowerCase())) {
+        _centerMapOnClinic(clinic); // Centrer la carte sur la clinique
+        break;
       }
     }
-
-    return markers;
   }
+
+  // Créer des marqueurs pour les cliniques proches
+  List<Marker> _buildClinicMarkers() {
+  List<Marker> markers = [];
+
+  for (var clinic in _clinics) {
+    final clinicLatLng = latlng.LatLng(clinic['lat'], clinic['lon']);
+    if (_searchQuery.isEmpty || clinic['name'].toLowerCase().contains(_searchQuery.toLowerCase())) {
+      markers.add(Marker(
+        point: clinicLatLng,
+        width: 80,
+        height: 80,
+        child: GestureDetector(
+          onTap: () => _showClinicDialog(clinic['name']),
+          child: Icon(Icons.location_on, color: Colors.blue, size: 40.0),
+        ),
+      ));
+    }
+  }
+
+  return markers;
+}
 
   // Fonction pour afficher une boîte de dialogue avec le nom de la clinique
   void _showClinicDialog(String clinicName) {

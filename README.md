@@ -6,8 +6,9 @@ Two complementary applications aimed at simplifying access to care and optimizin
 ## Mediclic
 application for patients
 - Quickly find a specialist or suitable clinic.
--  View and manage your medical records.
+- View and manage your medical records.
 - Book appointments online.
+- ChatGPT API integration to recommend a specialist based on symptoms.
 
 ## Mediclinique
 application for clinics

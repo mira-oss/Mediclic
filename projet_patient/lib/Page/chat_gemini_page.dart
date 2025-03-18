@@ -56,9 +56,9 @@ class _ChatPageState extends State<ChatGemini> {
                         elevation: 4,
                         color: message["role"] == "user" ? Colors.blue[100] : Colors.grey[200],
                         child: Padding(
-                          padding: const EdgeInsets.all(12.0),
+                          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                           child: ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7), // Limite la largeur du message
+                            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5), // Limite la largeur du message
                             child: Text(
                               message["content"]!,
                               style: TextStyle(
@@ -89,9 +89,21 @@ class _ChatPageState extends State<ChatGemini> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(hintText: "Écris ton message...", border: OutlineInputBorder()),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7), // Limite la largeur du message
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(hintText: "Écris ton message...", border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                              borderSide: BorderSide(
+                                color: Colors.blue, // Couleur de la bordure lorsqu'en focus
+                                width: 2,
+                              ),
+                            ),
+                            filled: false, // Pas de fond
+                      ),
+                    ),
                   ),
                 ),
                 IconButton(

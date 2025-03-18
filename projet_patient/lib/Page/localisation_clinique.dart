@@ -4,7 +4,7 @@ import 'package:latlong2/latlong.dart' as latlng;
 import 'package:location/location.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'dart:math' as math;
+
 class MapsPage extends StatefulWidget {
   @override
   _MapsPageState createState() => _MapsPageState();
@@ -24,35 +24,6 @@ class _MapsPageState extends State<MapsPage> {
     _getCurrentLocation();
   }
 
-// Fonction pour ajouter les emplacements fictifs
-void _addFakeLocations(double lat, double lon) {
-  final distance = 5.0; // 5 km
-  final bearing = [0.0, 90.0, 180.0, 270.0]; // Directions (Nord, Est, Sud, Ouest)
-  final double earthRadius = 6371.0; // Rayon de la Terre en km
-
-  for (var i = 0; i < 4; i++) {
-    final double bearingRad = bearing[i] * math.pi / 180.0; // Angle en radians
-    final double latRad = lat * math.pi / 180.0;
-    final double lonRad = lon * math.pi / 180.0;
-    final double distanceRad = distance / earthRadius;
-
-    final double newLatRad = math.asin(math.sin(latRad) * math.cos(distanceRad) +
-        math.cos(latRad) * math.sin(distanceRad) * math.cos(bearingRad));
-
-    final double newLonRad = lonRad +
-        math.atan2(math.sin(bearingRad) * math.sin(distanceRad) * math.cos(latRad),
-            math.cos(distanceRad) - math.sin(latRad) * math.sin(newLatRad));
-
-    final double newLat = newLatRad * 180.0 / math.pi;
-    final double newLon = newLonRad * 180.0 / math.pi;
-
-    _clinics.add({
-      'name': 'Emplacement Fictif ${i + 1}',
-      'lat': newLat,
-      'lon': newLon,
-    });
-  }
-}
 
   // Fonction pour obtenir la position actuelle
   Future<void> _getCurrentLocation() async {
@@ -66,7 +37,6 @@ void _addFakeLocations(double lat, double lon) {
       14.0,
     );
     _getHealthFacilities(location.latitude!, location.longitude!); // Récupérer les cliniques proches
-    _addFakeLocations(location.latitude!, location.longitude!); // Ajouter les emplacements fictifs
   } catch (e) {
     print("Erreur lors de la récupération de la localisation: $e");
   }
@@ -143,7 +113,7 @@ void _addFakeLocations(double lat, double lon) {
   void _centerMapOnClinic(Map<String, dynamic> clinic) {
     _mapController.move(
       latlng.LatLng(clinic['lat'], clinic['lon']),
-      16.0, // zoom sur la clinique
+      25.0, // zoom sur la clinique
     );
   }
 
@@ -185,7 +155,7 @@ void _addFakeLocations(double lat, double lon) {
                     mapController: _mapController,
                     options: MapOptions(
                       initialCenter: latlng.LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-                      initialZoom: 14.0,
+                      initialZoom: 11.0,
                     ),
                     children: [
                       openStreetMapTileLayer,
@@ -194,10 +164,65 @@ void _addFakeLocations(double lat, double lon) {
                           // Marqueur pour la position actuelle
                           Marker(
                             point: latlng.LatLng(_currentLocation!.latitude!, _currentLocation!.longitude!),
-                            child: Icon(Icons.location_on, color: Colors.red, size: 40.0),
+                            child: Icon(Icons.location_pin, color: Colors.red, size: 40.0),
                           ),
                           // Marqueurs pour les établissements de santé proches
                           ..._buildClinicMarkers(),
+                        ],
+                      ),
+
+                      MarkerLayer(
+                        markers: [
+                          // Marqueur pour la position fictive
+                          Marker(
+                            point:  latlng.LatLng(6.43339, 2.34978),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.43237, 2.34643),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.43476, 2.34459),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.43817, 2.34549),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.43949, 2.34339),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.43386, 2.34201),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.44976, 2.34970),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                          ),
                         ],
                       ),
                     ],
@@ -231,8 +256,8 @@ void _addFakeLocations(double lat, double lon) {
     if (_searchQuery.isEmpty || clinic['name'].toLowerCase().contains(_searchQuery.toLowerCase())) {
       markers.add(Marker(
         point: clinicLatLng,
-        width: 80,
-        height: 80,
+        width: 200,
+        height: 200,
         child: GestureDetector(
           onTap: () => _showClinicDialog(clinic['name']),
           child: Icon(Icons.location_on, color: Colors.blue, size: 40.0),
@@ -266,3 +291,4 @@ void _addFakeLocations(double lat, double lon) {
         userAgentPackageName: "dev.fleaflet.flutter_map.example",
       );
 }
+

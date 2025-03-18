@@ -22,51 +22,25 @@ class MedicalRecordView extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildSection('Informations Personnelles', [
-              _buildInfoRow('Taille', patientRecord['informationsPersonnelles']?['taille']),
-              _buildInfoRow('Poids', patientRecord['informationsPersonnelles']?['poids']),
-              _buildInfoRow('Groupe Sanguin', patientRecord['informationsPersonnelles']?['groupeSanguin']),
-            ]),
-            _buildSection('Traitements Antérieurs', [
-              _buildListInfo('Médicaments précédents', patientRecord['traitementsAnterieurs']?['medicamentsPrecedents']),
-              _buildListInfo('Interventions chirurgicales', patientRecord['traitementsAnterieurs']?['interventionsChirurgicales']),
-              _buildListInfo('Thérapies suivies', patientRecord['traitementsAnterieurs']?['therapiesSuivies']),
-            ]),
-            _buildSection('Antécédents', [
-              _buildListInfo('Antécédents médicaux', patientRecord['antecedents']?['medicaux']),
-              _buildListInfo('Antécédents chirurgicaux', patientRecord['antecedents']?['chirurgicaux']),
-              _buildListInfo('Antécédents gynéco-obstétriques', patientRecord['antecedents']?['gynecoObstetriques']),
-              _buildListInfo('Antécédents familiaux', patientRecord['antecedents']?['familiaux']),
-            ]),
-            _buildSection('Allergies', [
-              _buildListInfo('Allergies médicamenteuses', patientRecord['allergies']?['medicaments']),
-              _buildListInfo('Réactions observées', patientRecord['allergies']?['reactionsObservees']),
-              _buildListInfo('Allergies alimentaires', patientRecord['allergies']?['alimentaires']),
-            ]),
-            _buildSection('Déparasitage', [
-              _buildInfoRow('Type de traitement', patientRecord['deparasitage']?['typeTraitement']),
-              _buildInfoRow('Fréquence', patientRecord['deparasitage']?['frequence']),
-            ]),
-            _buildSection('Enquête Sociale', [
-              _buildInfoRow('Situation familiale', patientRecord['enqueteSociale']?['situationFamiliale']),
-              _buildInfoRow('Profession', patientRecord['enqueteSociale']?['profession']),
-              _buildInfoRow('Habitudes alimentaires', patientRecord['enqueteSociale']?['habitudesAlimentaires']),
-            ]),
-            _buildSection('Examen Physique', [
-              _buildInfoRow('Nom de l\'examen', patientRecord['examenPhysique']?['nomExamen']),
-              _buildInfoRow('Résultat de l\'examen', patientRecord['examenPhysique']?['resultatExamen']),
-            ]),
-            _buildSection('Diagnostic', [
-              _buildInfoRow('Hypothèses diagnostiques', patientRecord['diagnostic']?['hypothesesDiagnostiques']),
-              _buildInfoRow('Diagnostic final', patientRecord['diagnostic']?['diagnosticFinal']),
-            ]),
+            _buildSection('Informations Personnelles', patientRecord['informationsPersonnelles']),
+            _buildSection('Traitements Antérieurs', patientRecord['traitementsAnterieurs']),
+            _buildSection('Antécédents', patientRecord['antecedents']),
+            _buildSection('Allergies', patientRecord['allergies']),
+            _buildSection('Déparasitage', patientRecord['deparasitage']),
+            _buildSection('Enquête Sociale', patientRecord['enqueteSociale']),
+            _buildSection('Examen Physique', patientRecord['examenPhysique']),
+            _buildSection('Diagnostic', patientRecord['diagnostic']),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSection(String title, List<Widget> children) {
+  Widget _buildSection(String title, dynamic data) {
+    if (data == null || (data is Map && data.isEmpty)) {
+      return SizedBox.shrink(); // Si la section est vode je n'affiche roien
+    }
+
     return Card(
       margin: EdgeInsets.symmetric(vertical: 10),
       elevation: 4,
@@ -80,10 +54,42 @@ class MedicalRecordView extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
             ),
             SizedBox(height: 10),
-            ...children,
+            if (data is Map<String, dynamic>)
+              ...data.entries.map((entry) {
+                if (entry.key == 'date') {
+                  return _buildDateRow(entry.value);
+                } else if (entry.value is Map<String, dynamic>) {
+                  return _buildSubSection(entry.key, entry.value);
+                } else if (entry.value is List<dynamic>) {
+                  return _buildListInfo(entry.key, entry.value);
+                } else {
+                  return _buildInfoRow(entry.key, entry.value);
+                }
+              }).toList(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSubSection(String title, Map<String, dynamic> data) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+        ),
+        ...data.entries.map((entry) {
+          if (entry.key == 'date') {
+            return _buildDateRow(entry.value);
+          } else if (entry.value is List<dynamic>) {
+            return _buildListInfo(entry.key, entry.value);
+          } else {
+            return _buildInfoRow(entry.key, entry.value);
+          }
+        }).toList(),
+      ],
     );
   }
 
@@ -118,15 +124,8 @@ class MedicalRecordView extends StatelessWidget {
             '$label : ',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
-          if (data == null || (data is Map && data.isEmpty) || (data is List && data.isEmpty))
+          if (data == null || (data is List && data.isEmpty))
             Text('Aucune information', style: TextStyle(fontSize: 16)),
-          if (data is Map<String, dynamic>)
-            ...data.entries.map((entry) {
-              return Text(
-                '- ${entry.key} : ${entry.value}',
-                style: TextStyle(fontSize: 16),
-              );
-            }).toList(),
           if (data is List<dynamic>)
             ...data.map((item) {
               return Text(
@@ -135,6 +134,16 @@ class MedicalRecordView extends StatelessWidget {
               );
             }).toList(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDateRow(String date) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 5),
+      child: Text(
+        'Date d\'enregistrement : $date',
+        style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic, color: Colors.grey),
       ),
     );
   }

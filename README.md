@@ -1,43 +1,43 @@
 
 
 #  Mediclic & Mediclinique
-Two complementary applications aimed at simplifying access to care and optimizing clinic management.
+Deux applications complémentaires visant à simplifier l'accès aux soins et à optimiser la gestion des cliniques.
 
 ## Mediclic
-application for patients
-- Quickly find a specialist or suitable clinic.
-- View and manage your medical records.
-- Book appointments online.
-- ChatGPT API integration to recommend a specialist based on symptoms.
+Application pour les patients
+- Trouvez rapidement un spécialiste ou une clinique adaptée.
+- Consultez et gérez votre dossier médical.
+- Prenez rendez-vous en ligne.
+- Intégration de l'API ChatGPT pour recommander un spécialiste en fonction de vos symptômes.
 
 ## Mediclinique
-application for clinics
-- Manage appointments and physician availability.
-- Access patients' medical records (with their consent).
-- Improve patient reception and orientation.
+Application pour les cliniques
+- Gérer les rendez-vous et la disponibilité des médecins.
+- Accéder aux dossiers médicaux des patients (avec leur consentement).
+- Améliorer l'accueil et l'orientation des patients.
 
-##  Features
-- Mediclic (Patients)
+##  Caractéristiques
+- Médiclinique (Patients)
 
-🔍 Specialist and Clinic Search
+🔍 Recherche de spécialistes et de cliniques
 
-📂 Medical Record Management
+📂 Gestion des dossiers médicaux
 
-📅 Online Appointment Scheduling
+📅 Prise de rendez-vous en ligne
 
-- Mediclinique (Clinics)
+- Médiclinique (Cliniques)
 
-📋 Appointment Management
+📋 Gestion des rendez-vous
 
-👨‍⚕️ Medical Record Tracking with Consent
+👨‍⚕️ Suivi des dossiers médicaux avec consentement
 
-🏥 Optimized Patient Reception and Guidance
+🏥 Accueil et orientation optimisés des patients
 
-## Tech Stack
+## Pile technologique
 - Flutter
 - Firebase
 
-## 🙇 Author
+## 🙇 Auteur(e)
 #### Miradie
 #### Karima
 #### Fabrice
@@ -45,25 +45,24 @@ application for clinics
 - Github:https://github.com/mira-oss/flutter_day04
         
 
-
-## How to use
-1. Clone the repo
+## Comment utiliser
+1. Cloner le dépôt
 ``` bash
 git clone git@github.com:mira-oss/flutter_day04.git
 ```
 
-2. Install dependencies
+2. Installer les dependences
 ``` bash
 flutter pub get
 ```
 
-3. Start the dev server
+3. Démarrer le serveur de développement
 ``` bash
 flutter run
 ```
         
-## Availability
-This project is available at this link https://github.com/mira-oss/flutter_day04/edit/main/README.md
+## Disponibilité
+Ce projet est disponible à ce lien https://github.com/mira-oss/flutter_day04/edit/main/README.md
 
 
   

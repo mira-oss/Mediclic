@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projet_patient/Page/dossiermedical.dart'; // Assurez-vous que ce chemin est correct
 
 class SearchPatientScreen extends StatefulWidget {
   @override

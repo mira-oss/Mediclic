@@ -14,6 +14,7 @@ class DetailsMedecin extends StatefulWidget {
 
 class _DetailsMedecinState extends State<DetailsMedecin> {
   List<Map<String, dynamic>> disponibilites = [];
+  String? heureSelectionnee; // Variable pour stocker l'heure sélectionnée
 
   Future<void> _requestPermissions() async {
     await [Permission.phone, Permission.sms].request();
@@ -65,6 +66,28 @@ class _DetailsMedecinState extends State<DetailsMedecin> {
     }
   }
 
+void _prendreRendezVous() {
+    if (heureSelectionnee != null) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            
+            title: Text("Rendez-vous confirmé", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.w800,),),
+            content: Text("Vous avez pris rendez-vous pour $heureSelectionnee.", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),),
+            actions: <Widget>[
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
 
   @override
@@ -281,15 +304,15 @@ class _DetailsMedecinState extends State<DetailsMedecin> {
               ),
               SizedBox(height: 10,),
               Container(
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: disponibilites.isEmpty
-                      ? [Text("Aucune disponibilité", style: TextStyle(color: Colors.grey, fontSize: 18))]
-                      : disponibilites.map((dispo) {
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: Column(
+  alignment: Alignment.centerLeft,
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: disponibilites.isEmpty
+        ? [Text("Aucune disponibilité", style: TextStyle(color: Colors.grey, fontSize: 18))]
+        : disponibilites.map((dispo) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("${dispo['jour']}:", style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.blue)),
@@ -297,16 +320,39 @@ class _DetailsMedecinState extends State<DetailsMedecin> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: dispo['heures'].map<Widget>((heure) {
-                      return Text(heure, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.grey));
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            heureSelectionnee = heure;
+                          });
+                        },
+                        child: Text(
+                          heure,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                            color: heureSelectionnee == heure ? Colors.green : Colors.grey,
+                          ),
+                        ),
+                      );
                     }).toList(),
                   ),
                 ],
-                            ),
-                          );
-                        }).toList(),
-                ),
-              )
-
+              ),
+            );
+          }).toList(),
+  ),
+),
+SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    minimumSize: Size(250, 50),
+                  ),
+                onPressed: heureSelectionnee != null ? _prendreRendezVous : null, // Désactivé si aucune heure sélectionnée
+                child: Text("Prendre rendez-vous", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+              ),
+  SizedBox(height: 20),
             ],
           ),
         ),

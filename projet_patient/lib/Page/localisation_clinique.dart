@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart' as latlng;
 import 'package:location/location.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MapsPage extends StatefulWidget {
   @override
@@ -179,49 +180,91 @@ class _MapsPageState extends State<MapsPage> {
                             width: 60,
                             height: 60,
                             alignment: Alignment.centerLeft,
-                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                            child: Icon(Icons.health_and_safety_outlined, color: Colors.redAccent, size: 40.0),
                           ),
                           Marker(
                             point:  latlng.LatLng(6.43237, 2.34643),
                             width: 60,
                             height: 60,
                             alignment: Alignment.centerLeft,
-                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                            child: FaIcon(FontAwesomeIcons.plus, color: Colors.redAccent, size: 40.0),
                           ),
                           Marker(
                             point:  latlng.LatLng(6.43476, 2.34459),
                             width: 60,
                             height: 60,
                             alignment: Alignment.centerLeft,
-                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                            child: Icon(Icons.health_and_safety_outlined, color: Colors.redAccent, size: 40.0),
                           ),
                           Marker(
                             point:  latlng.LatLng(6.43817, 2.34549),
                             width: 60,
                             height: 60,
                             alignment: Alignment.centerLeft,
-                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                            child: Icon(Icons.health_and_safety_outlined, color: Colors.redAccent, size: 40.0),
                           ),
                           Marker(
                             point:  latlng.LatLng(6.43949, 2.34339),
                             width: 60,
                             height: 60,
                             alignment: Alignment.centerLeft,
-                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                            child: Icon(Icons.health_and_safety_outlined, color: Colors.redAccent, size: 40.0),
                           ),
                           Marker(
                             point:  latlng.LatLng(6.43386, 2.34201),
                             width: 60,
                             height: 60,
                             alignment: Alignment.centerLeft,
-                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                            child: Icon(Icons.health_and_safety_outlined, color: Colors.redAccent, size: 40.0),
                           ),
                           Marker(
                             point:  latlng.LatLng(6.44976, 2.34970),
                             width: 60,
                             height: 60,
                             alignment: Alignment.centerLeft,
-                            child: Icon(Icons.location_pin, color: Colors.blue, size: 40.0),
+                            child: Icon(Icons.health_and_safety_outlined, color: Colors.redAccent, size: 40.0),
+                          ),
+                           Marker(
+                            point:  latlng.LatLng(6.44148, 2.34808),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.medication_outlined, color: Colors.green, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.44831, 2.35478),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.medication_outlined, color: Colors.green, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.44609, 2.34422),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.medication_outlined, color: Colors.green, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.43405, 2.34215),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.medication_outlined, color: Colors.green, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.43798, 2.33331),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.medication_outlined, color: Colors.green, size: 40.0),
+                          ),
+                          Marker(
+                            point:  latlng.LatLng(6.46638, 2.33837),
+                            width: 60,
+                            height: 60,
+                            alignment: Alignment.centerLeft,
+                            child: Icon(Icons.medication_outlined, color: Colors.green, size: 40.0),
                           ),
                         ],
                       ),

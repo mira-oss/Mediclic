@@ -61,8 +61,6 @@ flutter pub get
 flutter run
 ```
         
-## Disponibilité
-Ce projet est disponible à ce lien https://github.com/mira-oss/flutter_day04/edit/main/README.md
 
 
   
